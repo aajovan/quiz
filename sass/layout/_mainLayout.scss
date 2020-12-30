@@ -1,0 +1,33 @@
+body {
+    background: #f6f8ff;
+}
+
+.buttonGroup {
+    background-color: $color-tertiary;
+    box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.2);
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+#quiz {
+    text-indent: 10px;
+    display: none;
+}
+
+#container {
+    max-width: 1000px;
+    margin: auto;
+    background: $color-secondary;
+    color: $color-white;
+    display: flex;
+    flex-direction: column;
+}
+.titleGroup {
+    background-color: $color-primary;
+    box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.2);
+    color: $color-white;
+    text-align: center;
+}
+#question {
+    padding: 10px;
+}
