@@ -7,7 +7,8 @@ var globalUI = {
     btnCheckAns: "#checkAnswers",
     navigation: "#navigation",
     question: "#question",
-    ansChecked: 'input[name="answer"]:checked'
+    ansChecked: 'input[name="answer"]:checked',
+    popup: '#popup'
 };
 var questions = [
     {
@@ -169,12 +170,18 @@ function choose(hideWarning) {
         selections[questionCounter].length <
         questions[questionCounter].correctAnswer.length
     ) {
-        alert(
-            "Potrebno je odabrati " +
+
+        var displayMsg = "Potrebno je odabrati " +
             questions[questionCounter].correctAnswer.length +
             " odgovora na pitanju " +
             (questionCounter + 1)
-        );
+
+        $(globalUI.popup).find('h3').html(displayMsg)
+        $(globalUI.popup).fadeIn(300);
+        setTimeout(function () {
+            $(globalUI.popup).fadeOut(300);
+        }, 2400);
+
     }
 }
 
@@ -186,7 +193,7 @@ function displayNext() {
         $(globalUI.btnCheckAns).hide();
         var nextQuestion = createQuestionElement(questionCounter);
         quiz.append(nextQuestion).fadeIn();
-        setActiveNavigation ()
+        setActiveNavigation()
 
         switch (questionCounter) {
             case 1:
@@ -258,9 +265,9 @@ function setupNavigation() {
     }
 }
 
-function setActiveNavigation () {
-    $(globalUI.navigation).find('.navItem').each(function(){
-        if($(this).attr('href') == questionCounter) {
+function setActiveNavigation() {
+    $(globalUI.navigation).find('.navItem').each(function () {
+        if ($(this).attr('href') == questionCounter) {
             $(this).parent('div').addClass('button-active');
         } else {
             $(this).parent('div').removeClass('button-active');
