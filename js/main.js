@@ -1,196 +1,259 @@
-(function () {
-    var questions = [{
+"use strict";
+
+var globalUI = {
+    quiz: "#quiz",
+    btnNext: "#next",
+    btnPrev: "#prev",
+    btnCheckAns: "#checkAnswers",
+    navigation: "#navigation",
+    question: "#question",
+    ansChecked: 'input[name="answer"]:checked'
+};
+var questions = [
+    {
         question: "question 1",
         choices: [1, 2, 3, 4, 5, 6, 7],
         correctAnswer: [2, 5, 10]
-    }, {
+    },
+    {
         question: "question 2",
         choices: [1, 2, 3, 4, 5, 6, 7],
         correctAnswer: [2, 5, 10, 7]
-    }, {
+    },
+    {
         question: "question 3",
         choices: [1, 2, 3, 4, 5, 6, 7],
         correctAnswer: [2, 5, 10, 6, 1]
-    }, {
+    },
+    {
         question: "question 4",
         choices: [1, 2, 3, 4, 5, 6, 7],
         correctAnswer: [2, 5, 10, 3, 10, 8]
-    }];
+    }
+];
+var questionCounter = 0;
+var selections = [];
+var quiz = $(globalUI.quiz);
 
-    var questionCounter = 0; //Tracks question number
-    var selections = []; //Array containing user choices
-    var quiz = $('#quiz'); //Quiz div object
+// Display initial question
 
-    // Display initial question
-    setupNavigation();
+setupNavigation();
+displayNext();
+
+// Click handler for the 'next' button
+
+$(globalUI.btnNext).on("click", function (e) {
+    e.preventDefault();
+
+    // Suspend click listener during fade animation
+
+    if (quiz.is(":animated")) {
+        return false;
+    }
+
+    choose();
+    questionCounter++;
     displayNext();
+});
 
-    // Click handler for the 'next' button
-    $('#next').on('click', function (e) {
+// Click handler for the 'prev' button
+
+$(globalUI.btnPrev).on("click", function (e) {
+    e.preventDefault();
+
+    if (quiz.is(":animated")) {
+        return false;
+    }
+
+    choose();
+    questionCounter--;
+    displayNext();
+});
+
+// Click handler for the 'Check answers' button
+
+$(globalUI.btnCheckAns).on("click", function (e) {
+    e.preventDefault();
+
+    if (quiz.is(":animated")) {
+        return false;
+    }
+
+    $(globalUI.question).remove();
+    var scoreElem = displayScore();
+    quiz.append(scoreElem).fadeIn();
+    $(globalUI.btnNext).hide();
+    $(globalUI.btnPrev).hide();
+    $(globalUI.btnCheckAns).hide();
+    $(globalUI.navigation).hide();
+});
+
+//Click for question navigation button
+
+$(globalUI.navigation)
+    .find(".button")
+    .on("click", function (e) {
         e.preventDefault();
 
-        // Suspend click listener during fade animation
-        if (quiz.is(':animated')) {
+        if (quiz.is(":animated")) {
             return false;
         }
+
         choose();
-        questionCounter++;
-        displayNext();
-
-    });
-
-    // Click handler for the 'prev' button
-    $('#prev').on('click', function (e) {
-        e.preventDefault();
-
-        if (quiz.is(':animated')) {
-            return false;
-        }
-        choose();
-        questionCounter--;
-        displayNext();
-    });
-
-    // Click handler for the 'Check answers' button
-    $('#checkAnswers').on('click', function (e) {
-        e.preventDefault();
-
-        if (quiz.is(':animated')) {
-            return false;
-        }
-        $('#question').remove();
-        var scoreElem = displayScore();
-        quiz.append(scoreElem).fadeIn();
-        $('#next').hide();
-        $('#prev').hide();
-        $('#checkAnswers').hide();
-    });
-    //Click for question navigation button
-    $('#navigation').find('.button').on('click', function (e) {
-        e.preventDefault();
-
-        if (quiz.is(':animated')) {
-            return false;
-        }
-        choose();
-        questionCounter = Number.parseInt($(this).find('a').attr('href'));
+        questionCounter = parseInt($(this).find("a").attr("href"));
         displayNext();
     });
 
-    // Creates and returns the div that contains the questions and 
-    // the answer selections
-    function createQuestionElement(index) {
-        var qElement = $('<div>', {
-            id: 'question'
-        });
+// Creates and returns the div that contains the questions and
+// the answer selections
 
-        var header = $('<h2>Question ' + (index + 1) + ':</h2>');
-        qElement.append(header);
+function createQuestionElement(index) {
+    var qElement = $("<div>", {
+        id: "question"
+    });
+    var header = $("<h2>Question " + (index + 1) + ":</h2>");
+    qElement.append(header);
+    var question = $("<p>").append(questions[index].question);
+    qElement.append(question);
+    var radioButtons = createRadios(index);
+    qElement.append(radioButtons);
+    return qElement;
+}
 
-        var question = $('<p>').append(questions[index].question);
-        qElement.append(question);
+// Creates a list of the answer choices as radio inputs
 
-        var radioButtons = createRadios(index);
-        qElement.append(radioButtons);
+function createRadios(index) {
+    var radioList = $('<div class="inputGroup__container">');
+    var item = null;
+    var input = "";
 
-        return qElement;
-    }
+    for (var i = 0; i < questions[index].choices.length; i++) {
+        item = $('<div class="inputGroup">');
 
-    // Creates a list of the answer choices as radio inputs
-    function createRadios(index) {
-        var radioList = $('<div class="inputGroup__container">');
-        var item;
-        var input = '';
-        for (var i = 0; i < questions[index].choices.length; i++) {
-            item = $('<div class="inputGroup">');
-            if (selections[index] && selections[index].includes(i.toString())) {
-                input = '<input type="checkbox" name="answer" class="switch" checked value=' + i + ' />';
-            } else {
-                input = '<input type="checkbox" name="answer" class="switch" value=' + i + ' />';
-            }
-            input += '<label for="answer">' + questions[index].choices[i]; +'</label>';
-            item.append(input);
-            radioList.append(item);
+        if (selections[index] && selections[index].indexOf(i.toString()) !== -1) {
+            input =
+                '<input type="checkbox" name="answer" class="switch" checked value=' +
+                i +
+                " />";
+        } else {
+            input =
+                '<input type="checkbox" name="answer" class="switch" value=' +
+                i +
+                " />";
         }
-        return radioList;
+
+        input += '<label for="answer">' + questions[index].choices[i];
+        +"</label>";
+        item.append(input);
+        radioList.append(item);
     }
 
-    // Reads the user selection and pushes the value to an array
-    function choose(hideWarning) {
-        var selectedAnswers = [];
-        selections[questionCounter] = $('input[name="answer"]:checked').val();
-        $('input[name="answer"]:checked').each(function () {
-            var sThisVal = (this.checked ? $(this).val() : "");
-            selectedAnswers.push(sThisVal);
-        });
-        selections[questionCounter] = selectedAnswers;
-        // Alert if not correct num of answers
-        if (!hideWarning && (selections[questionCounter]) && (selections[questionCounter].length < questions[questionCounter].correctAnswer.length)) {
-            alert('Potrebno je odabrati ' + questions[questionCounter].correctAnswer.length + ' odgovora na pitanju ' + (questionCounter + 1));
-        }
+    return radioList;
+}
+
+// Reads the user selection and pushes the value to an array
+
+function choose(hideWarning) {
+    var selectedAnswers = [];
+    selections[questionCounter] = $(globalUI.ansChecked).val();
+    $(globalUI.ansChecked).each(function () {
+        var sThisVal = this.checked ? $(this).val() : "";
+        selectedAnswers.push(sThisVal);
+    });
+    selections[questionCounter] = selectedAnswers;
+
+    // Alert if not correct num of answers
+
+    if (
+        !hideWarning &&
+        selections[questionCounter] &&
+        selections[questionCounter].length <
+        questions[questionCounter].correctAnswer.length
+    ) {
+        alert(
+            "Potrebno je odabrati " +
+            questions[questionCounter].correctAnswer.length +
+            " odgovora na pitanju " +
+            (questionCounter + 1)
+        );
     }
+}
 
-    // Displays next requested element
-    function displayNext() {
-        quiz.fadeOut(function () {
-            $('#question').remove();
-            $('#checkAnswers').hide();
-            if (questionCounter < questions.length) {
+// Displays next requested element
 
-                var nextQuestion = createQuestionElement(questionCounter);
-                quiz.append(nextQuestion).fadeIn();
-                if (questionCounter === 1) {
-                    $('#prev').show();
-                } else if (questionCounter === 0) {
-                    $('#prev').hide();
-                    $('#next').show();
-                } else if (questionCounter === questions.length - 1) {
+function displayNext() {
+    quiz.fadeOut(function () {
+        $(globalUI.question).remove();
+        $(globalUI.btnCheckAns).hide();
+        var nextQuestion = createQuestionElement(questionCounter);
+        quiz.append(nextQuestion).fadeIn();
 
-                    $('#next').hide();
-                    $('#prev').show();
-                    $('#checkAnswers').show();
+        switch (questionCounter) {
+            case 1:
+                $(globalUI.btnPrev).show();
+                break;
+
+            case 0:
+                $(globalUI.btnPrev).hide();
+                $(globalUI.btnNext).show();
+                break;
+
+            case questions.length - 1:
+                $(globalUI.btnNext).hide();
+                $(globalUI.btnPrev).show();
+                $(globalUI.btnCheckAns).show();
+                checkAnswersvalid();
+                $('input[name="answer"]').on("click", function (e) {
+                    choose(true);
                     checkAnswersvalid();
-                    $('input[name="answer"]').on('click', function (e) {
-                        choose(true);
-                        checkAnswersvalid();
-                    });
-                } else {
-                    $('#next').show();
-                }
+                });
+                break;
+
+            default:
+                $(globalUI.btnNext).show();
+        }
+    });
+}
+
+// Check if answer valid, at least 1
+
+function checkAnswersvalid() {
+    var notValid = false;
+
+    if (selections.length < questions.length) {
+        notValid = true;
+    } else {
+        for (var i = 0; i < questions.length; i++) {
+            if (!selections || selections[i].length === 0) {
+                notValid = true;
+                break;
             }
-        });
+        }
     }
 
-    // Check if answer valid, at least 1
-    function checkAnswersvalid() {
-        var notValid = false;
-        if (selections.length < questions.length) {
-            notValid = true;
-        } else {
-            for (var i = 0; i < questions.length; i++) {
-                if (!selections || selections[i].length === 0) {
-                    notValid = true;
-                    break;
-                }
-            }
-        }
-        if (notValid) {
-            $('#checkAnswers').addClass("btn-disabled")
-        } else {
-            $('#checkAnswers').removeClass("btn-disabled")
-        }
+    if (notValid) {
+        $(globalUI.btnCheckAns).addClass("btn-disabled");
+    } else {
+        $(globalUI.btnCheckAns).removeClass("btn-disabled");
     }
-    // TO DO - implement score
-    function displayScore() {
-        var score = $('<p>Not implemented</p>');
-        return score;
+}
+
+// TO DO - implement score
+
+function displayScore() {
+    var score = $("<p>Not implemented</p>");
+    return score;
+}
+
+//Setup navigation buttons - questions
+
+function setupNavigation() {
+    var item = $(globalUI.navigation);
+
+    for (var i = 0; i < questions.length; i++) {
+        var navButton =
+            '<div class="button"><a href="' + i + '">' + questions[i].question;
+        +"</a></div>";
+        item.append(navButton);
     }
-    //Setup navigation buttons - questions
-    function setupNavigation() {
-        item = $('#navigation');
-        for (var i = 0; i < questions.length; i++) {
-            var navButton = '<div class="button"><a href="' + i + '">' + questions[i].question; +'</a></div>';
-            item.append(navButton);
-        }
-    }
-})();
+}
