@@ -10,28 +10,8 @@ var globalUI = {
     ansChecked: 'input[name="answer"]:checked',
     popup: '#popup'
 };
-var questions = [
-    {
-        question: "question 1",
-        choices: [1, 2, 3, 4, 5, 6, 7],
-        correctAnswer: [2, 5, 10]
-    },
-    {
-        question: "question 2",
-        choices: [1, 2, 3, 4, 5, 6, 7],
-        correctAnswer: [2, 5, 10, 7]
-    },
-    {
-        question: "question 3",
-        choices: [1, 2, 3, 4, 5, 6, 7],
-        correctAnswer: [2, 5, 10, 6, 1]
-    },
-    {
-        question: "question 4",
-        choices: [1, 2, 3, 4, 5, 6, 7],
-        correctAnswer: [2, 5, 10, 3, 10, 8]
-    }
-];
+var questions = generateRandomQuestions(4);
+console.log(questions);
 var questionCounter = 0;
 var selections = [];
 var quiz = $(globalUI.quiz);
@@ -168,11 +148,11 @@ function choose(hideWarning) {
         !hideWarning &&
         selections[questionCounter] &&
         selections[questionCounter].length >
-        questions[questionCounter].correctAnswer.length
+        (questionCounter + 3)
     ) {
 
         var displayMsg = "Moguće je odabrati " +
-            questions[questionCounter].correctAnswer.length +
+            (questionCounter + 3) +
             " odgovora na pitanju " +
             (questionCounter + 1)
 
@@ -273,4 +253,32 @@ function setGivenAnswer() {
             $(this).parent('div').removeClass('button-active');
         }
     })
+}
+
+// generate random question with 2-8 answers
+// minimum 1 correct answer, maximum n+2
+
+function generateRandomQuestion(questionNum) {
+    var randomNum = Math.floor(Math.random() * (8 - (questionNum + 2)) + 1) + (questionNum + 2);
+    var randomAnsMax = Math.floor(Math.random() * (questionNum + 2)) + 1;
+    var choices = [];
+    for (var i = 1; i < randomNum + 1; i++) {
+        choices.push(i)
+    }
+    var randomAns = choices.sort(() => .5 - Math.random()).slice(0, randomAnsMax)
+    return {
+        question: "question " + questionNum,
+        choices: choices,
+        correctAnswer: randomAns
+    }
+}
+
+// generate array with random questions
+
+function generateRandomQuestions(questions) {
+    var result = [];
+    for (var j = 0; j < questions; j++) {
+        result.push(generateRandomQuestion(j+1));
+    }
+    return result;
 }

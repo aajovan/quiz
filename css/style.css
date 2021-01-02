@@ -25,7 +25,8 @@ body {
 
 #quiz {
   display: none;
-  text-indent: 10px; }
+  text-indent: 10px;
+  min-height: 500px; }
 
 #container {
   background: #6c6f8b;
