@@ -100,7 +100,8 @@ $(globalUI.navigation)
         }
 
         choose();
-        questionCounter = parseInt($(this).find("a").attr("href"));
+        questionCounter = parseInt($(this).find('.navItem').attr('href'));
+        console.log(questionCounter)
         displayNext();
     });
 
@@ -113,8 +114,6 @@ function createQuestionElement(index) {
     });
     var header = $("<h2>Question " + (index + 1) + ":</h2>");
     qElement.append(header);
-    var question = $("<p>").append(questions[index].question);
-    qElement.append(question);
     var radioButtons = createRadios(index);
     qElement.append(radioButtons);
     return qElement;
@@ -187,6 +186,7 @@ function displayNext() {
         $(globalUI.btnCheckAns).hide();
         var nextQuestion = createQuestionElement(questionCounter);
         quiz.append(nextQuestion).fadeIn();
+        setActiveNavigation ()
 
         switch (questionCounter) {
             case 1:
@@ -232,9 +232,9 @@ function checkAnswersvalid() {
     }
 
     if (notValid) {
-        $(globalUI.btnCheckAns).addClass("btn-disabled");
+        $(globalUI.btnCheckAns).addClass("button-disabled");
     } else {
-        $(globalUI.btnCheckAns).removeClass("btn-disabled");
+        $(globalUI.btnCheckAns).removeClass("button-disabled");
     }
 }
 
@@ -252,8 +252,18 @@ function setupNavigation() {
 
     for (var i = 0; i < questions.length; i++) {
         var navButton =
-            '<div class="button"><a href="' + i + '">' + questions[i].question;
+            '<div class="button"><a class="navItem" href="' + i + '">' + questions[i].question;
         +"</a></div>";
         item.append(navButton);
     }
+}
+
+function setActiveNavigation () {
+    $(globalUI.navigation).find('.navItem').each(function(){
+        if($(this).attr('href') == questionCounter) {
+            $(this).parent('div').addClass('button-active');
+        } else {
+            $(this).parent('div').removeClass('button-active');
+        }
+    })
 }

@@ -1,30 +1,26 @@
 .button {
-    border-radius: 50px;
     background-color: $color-secondary;
+    border-radius: 50px;
     color: $color-white;
-    padding: 4px 15px;
     margin: 5px;
+    padding: 4px 15px;
+
+    &-active {
+        background-color: $color-primary;
+    }
+
+    &-disabled {
+        opacity: 0.5;
+        pointer-events: none;
+    }
+
+    a {
+        color: $color-white;
+        text-decoration: none;
+    }
 }
 
-.button a {
-    text-decoration: none;
-    color: $color-white;
-}
-
+#checkAnswers,
 #prev {
-    display: none;
-}
-
-#start {
-    display: none;
-    width: 90px;
-}
-
-.btn-disabled {
-    pointer-events: none;
-    opacity: 0.5;
-}
-
-#checkAnswers {
     display: none;
 }
