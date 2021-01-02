@@ -1,4 +1,13 @@
 .button {
+
+    &__group {
+        background-color: $color-tertiary;
+        box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.2);
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
     background-color: $color-secondary;
     border-radius: 50px;
     color: $color-white;

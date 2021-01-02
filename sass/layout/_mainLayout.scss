@@ -1,33 +1,28 @@
 body {
-    background: #f6f8ff;
+    background: $color-main-background;
 }
 
-.buttonGroup {
-    background-color: $color-tertiary;
-    box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.2);
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-}
 #quiz {
-    text-indent: 10px;
     display: none;
+    text-indent: 10px;
 }
 
 #container {
-    max-width: 1000px;
-    margin: auto;
     background: $color-secondary;
     color: $color-white;
     display: flex;
     flex-direction: column;
+    margin: auto;
+    max-width: 1000px;
 }
-.titleGroup {
+
+.title__group{
     background-color: $color-primary;
     box-shadow: 0 0.125rem 0.625rem rgba(0, 0, 0, 0.2);
     color: $color-white;
     text-align: center;
 }
+
 #question {
     padding: 10px;
 }
