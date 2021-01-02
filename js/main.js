@@ -11,7 +11,6 @@ var globalUI = {
     popup: '#popup'
 };
 var questions = generateRandomQuestions(4);
-console.log(questions);
 var questionCounter = 0;
 var selections = [];
 var quiz = $(globalUI.quiz);
@@ -260,16 +259,13 @@ function setGivenAnswer() {
 
 function generateRandomQuestion(questionNum) {
     var randomNum = Math.floor(Math.random() * (8 - (questionNum + 2)) + 1) + (questionNum + 2);
-    var randomAnsMax = Math.floor(Math.random() * (questionNum + 2)) + 1;
     var choices = [];
     for (var i = 1; i < randomNum + 1; i++) {
         choices.push(i)
     }
-    var randomAns = choices.sort(() => .5 - Math.random()).slice(0, randomAnsMax)
     return {
         question: "question " + questionNum,
         choices: choices,
-        correctAnswer: randomAns
     }
 }
 
