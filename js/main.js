@@ -193,7 +193,7 @@ function displayNext() {
         $(globalUI.btnCheckAns).hide();
         var nextQuestion = createQuestionElement(questionCounter);
         quiz.append(nextQuestion).fadeIn();
-        setActiveNavigation()
+        setGivenAnswer()
 
         switch (questionCounter) {
             case 1:
@@ -265,9 +265,9 @@ function setupNavigation() {
     }
 }
 
-function setActiveNavigation() {
-    $(globalUI.navigation).find('.navItem').each(function () {
-        if ($(this).attr('href') == questionCounter) {
+function setGivenAnswer() {
+    $(globalUI.navigation).find('.navItem').each(function (index) {
+        if (selections[index] && selections[index].length > 0) {
             $(this).parent('div').addClass('button-active');
         } else {
             $(this).parent('div').removeClass('button-active');
