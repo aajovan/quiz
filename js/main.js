@@ -167,11 +167,11 @@ function choose(hideWarning) {
     if (
         !hideWarning &&
         selections[questionCounter] &&
-        selections[questionCounter].length <
+        selections[questionCounter].length >
         questions[questionCounter].correctAnswer.length
     ) {
 
-        var displayMsg = "Potrebno je odabrati " +
+        var displayMsg = "Moguće je odabrati " +
             questions[questionCounter].correctAnswer.length +
             " odgovora na pitanju " +
             (questionCounter + 1)
