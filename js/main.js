@@ -30,10 +30,12 @@ $(globalUI.btnNext).on("click", function (e) {
     if (quiz.is(":animated")) {
         return false;
     }
-
     choose();
-    questionCounter++;
-    displayNext();
+    if (!alertUser()) {
+        questionCounter++;
+        displayNext();
+    }
+
 });
 
 // Click handler for the 'prev' button
@@ -46,8 +48,10 @@ $(globalUI.btnPrev).on("click", function (e) {
     }
 
     choose();
-    questionCounter--;
-    displayNext();
+    if (!alertUser()) {
+        questionCounter--;
+        displayNext();
+    }
 });
 
 // Click handler for the 'Check answers' button
@@ -66,6 +70,7 @@ $(globalUI.btnCheckAns).on("click", function (e) {
     $(globalUI.btnPrev).hide();
     $(globalUI.btnCheckAns).hide();
     $(globalUI.navigation).hide();
+
 });
 
 //Click for question navigation button
@@ -80,9 +85,10 @@ $(globalUI.navigation)
         }
 
         choose();
-        questionCounter = parseInt($(this).find('.navItem').attr('href'));
-        console.log(questionCounter)
-        displayNext();
+        if (!alertUser()) {
+            questionCounter = parseInt($(this).find('.navItem').attr('href'));
+            displayNext();
+        }
     });
 
 // Creates and returns the div that contains the questions and
@@ -92,7 +98,7 @@ function createQuestionElement(index) {
     var qElement = $("<div>", {
         id: "question"
     });
-    var header = $("<h2>Question " + (index + 1) + ":</h2>");
+    var header = $("<h2>Pitanje " + (index + 1) + ":</h2>");
     qElement.append(header);
     var radioButtons = createRadios(index);
     qElement.append(radioButtons);
@@ -132,7 +138,7 @@ function createRadios(index) {
 
 // Reads the user selection and pushes the value to an array
 
-function choose(hideWarning) {
+function choose() {
     var selectedAnswers = [];
     selections[questionCounter] = $(globalUI.ansChecked).val();
     $(globalUI.ansChecked).each(function () {
@@ -140,28 +146,6 @@ function choose(hideWarning) {
         selectedAnswers.push(sThisVal);
     });
     selections[questionCounter] = selectedAnswers;
-
-    // Alert if not correct num of answers
-
-    if (
-        !hideWarning &&
-        selections[questionCounter] &&
-        selections[questionCounter].length >
-        (questionCounter + 3)
-    ) {
-
-        var displayMsg = "Moguće je odabrati " +
-            (questionCounter + 3) +
-            " odgovora na pitanju " +
-            (questionCounter + 1)
-
-        $(globalUI.popup).find('h3').html(displayMsg)
-        $(globalUI.popup).fadeIn(300);
-        setTimeout(function () {
-            $(globalUI.popup).fadeOut(300);
-        }, 2400);
-
-    }
 }
 
 // Displays next requested element
@@ -190,7 +174,7 @@ function displayNext() {
                 $(globalUI.btnCheckAns).show();
                 checkAnswersvalid();
                 $('input[name="answer"]').on("click", function (e) {
-                    choose(true);
+                    choose();
                     checkAnswersvalid();
                 });
                 break;
@@ -206,7 +190,7 @@ function displayNext() {
 function checkAnswersvalid() {
     var notValid = false;
 
-    if (selections.length < questions.length) {
+    if (alertUser() || selections.length < questions.length) {
         notValid = true;
     } else {
         for (var i = 0; i < questions.length; i++) {
@@ -224,10 +208,35 @@ function checkAnswersvalid() {
     }
 }
 
+// Alert if not correct num of answers
+
+function alertUser() {
+
+    if (
+        selections[questionCounter] &&
+        selections[questionCounter].length >
+        (questionCounter + 3)
+    ) {
+
+        var displayMsg = "Moguće je odabrati " +
+            (questionCounter + 3) +
+            " odgovora na pitanju " +
+            (questionCounter + 1)
+
+        $(globalUI.popup).find('h3').html(displayMsg)
+        $(globalUI.popup).fadeIn(300);
+        setTimeout(function () {
+            $(globalUI.popup).fadeOut(300);
+        }, 2400);
+        return true;
+    }
+    return false;
+}
+
 // TO DO - implement score
 
 function displayScore() {
-    var score = $("<p>Not implemented</p>");
+    var score = $("<p>Nije implementirano</p>");
     return score;
 }
 
@@ -264,7 +273,7 @@ function generateRandomQuestion(questionNum) {
         choices.push(i)
     }
     return {
-        question: "question " + questionNum,
+        question: "Pitanje " + questionNum,
         choices: choices,
     }
 }
@@ -274,7 +283,7 @@ function generateRandomQuestion(questionNum) {
 function generateRandomQuestions(questions) {
     var result = [];
     for (var j = 0; j < questions; j++) {
-        result.push(generateRandomQuestion(j+1));
+        result.push(generateRandomQuestion(j + 1));
     }
     return result;
 }
